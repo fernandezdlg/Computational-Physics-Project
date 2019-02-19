@@ -8,6 +8,8 @@ def sp_energy_eos(p, rho, gamma):
 
 def pressure_eos(K, rho, gamma):
     return K * rho**gamma
-       
+    
+def rho_eos(p, K, gamma):
+    return (p / K)**-gamma
 
 ### may want to add more EoS in the future
