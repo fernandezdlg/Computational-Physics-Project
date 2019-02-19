@@ -1,6 +1,8 @@
 # polytopic_eos.py contains function that returns the value of the specific internal energy of a polytopic fluid
 # outlined as e = P / (y - 1)*rho , where P is some constant, y is the polytopic 
 
+from polytropic_eos import *
+
 
 # Function that takes all quantities and converts them all to computational units
 #def convert(G,c,epsilon,) 
@@ -20,5 +22,4 @@ def Gmass(r,rho,epsilon): # integrand
 def Bmass(r,rho,M): # integrand, M: total mass
     #return 4*pi*r**2*rho*sqrt(det(g))
     return (sqrt(1-2*G*M/(r*c**2)))**(-1)*4*pi*r^2*rho
-    
     
