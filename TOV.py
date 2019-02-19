@@ -2,7 +2,6 @@
 # outlined as e = P / (y - 1)*rho , where P is some constant, y is the polytopic 
 
 
-
 def convert(G,c,epsilon,)
 
 
