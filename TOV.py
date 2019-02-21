@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 # Function that takes all quantities and converts them all to computational units
 #def convert(G,c,epsilon,) 
 
-def dpdr(rho,epsilon,p,m):
+def dpdr(rho,epsilon,r,p,m):
     return -G*(rho*(1+epsilon/c**2)+p/c**2)*(m+4*pi*r**3*p/c**2)/(r*(r-2*G*m/c**2))
     
 def dmdr(r,rho,epsilon):
@@ -49,7 +49,7 @@ def main():
         rho_n = rho_eos(p_n, K, gamma)
         
         epsilon = sp_energy_eos(p_n, rho_n, gamma) 
-        pressure[i+1] = p_n + (dr*dpdr(rho_n, epsilon, p_n, m_n))
+        pressure[i+1] = p_n + (dr*dpdr(rho_n, epsilon,r , p_n, m_n))
     
     fig = plt.figure()    
     plt.plot(radii,pressure)
