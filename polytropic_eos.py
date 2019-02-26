@@ -10,6 +10,6 @@ def pressure_eos(rho, K, gamma):
     return K * rho**gamma
     
 def rho_eos(p, K, gamma):
-    return (p / K)**-gamma
+    return (p / K)**(1/gamma)
 
 ### may want to add more EoS in the future
