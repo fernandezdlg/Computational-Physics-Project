@@ -4,10 +4,10 @@
 ### POLYTROPIC EOS equations
 # return specific energy from pressure p , density rho and gamma constant
 def sp_energy_eos(p, rho, gamma):
-    return p / ( (gamma - 1)*rho ) 
+    return p / ((gamma - 1)*rho) 
 
 def pressure_eos(rho, K, gamma):
-    return K * rho**gamma
+    return K * (rho**gamma)
     
 def rho_eos(p, K, gamma):
     return (p / K)**(1/gamma)

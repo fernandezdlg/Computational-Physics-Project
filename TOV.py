@@ -7,25 +7,24 @@ from int_methods import *
 from convert_SI_to_cGM import *
 import matplotlib.pyplot as plt
 
-# Function that takes all quantities and converts them all to computational units
-#def convert(G,c,epsilon,) 
-
+# Function that takes all quantities and converts them all to computational units 
+"""
 def dpdr(rho,epsilon,r,p,m):
     return -G*(rho*(1+epsilon/c**2)+p/c**2)*(m+4*pi*r**3*p/c**2)/(r*(r-(2*G*m/c**2)))
     
 def dmdr(r,rho,epsilon):
     return 4*pi*r**2*rho*(1+epsilon/(c**2))
-
-"""
-def dpdr(rho,epsilon,r,p,m):
-    return -(rho*(1+epsilon)+p)*(m+4*pi*r**3*p)/(r*(r-2*m))
-   
-def dmdr(r,rho,epsilon):
-    return 4*pi*r**2*rho*(1+epsilon)
-""" 
     
 def dphidr(m,r,p):
     return (m+4*pi*r**3*p/c**2)/(r*(r-2*G*m/c**2))
+"""
+
+# These 'dpdr' and 'dmdr' are in cGM units
+def dpdr(rho,epsilon,r,p,m):
+    return -(rho*(1+epsilon)+p)*(m + 4*pi*(r**3)*p)/(r*(r-(2*m)))
+   
+def dmdr(r,rho,epsilon):
+    return 4*pi*(r**2)*rho*(1+epsilon)
     
 def Gmass(r,rho,epsilon): # integrand
     return 4*pi*r**2*rho*(1+epsilon/(c**2))
@@ -40,11 +39,11 @@ def main():
     Rmax = 50000
     Rmax = convert_SI_Length(Rmax)
 
-    N = 100
+    N = 10000
     radii = linspace(0,Rmax,N)
     dr = radii[1]-radii[0]
     
-    ctr = [0,0,0]
+    #ctr = [0,0,0]
     pressure, mass, potential = zeros(N), zeros(N), zeros(N)
     
     # culmulative sums of pressure, mass and potential
@@ -56,27 +55,37 @@ def main():
     # K and gamma are in cGM units already
     gamma = 2.75
     K = 30000
+    
+    """
+    epsi0 = sp_energy_eos(p, K, gamma)
+    print(epsi0)
+    
+    p_alt = pressure_eos(5.0e11, 1.98183e-6, gamma)
+    epsi0_alt = sp_energy_eos(p_alt, 1.98183e-6, gamma)
+    print(epsi0_alt)
+    epsi0_alt_cGM = convert_SI_SPEnergy(epsi0_alt)
+    print(epsi0_alt_cGM)
+    """
+    
+    
+    # initial pressure value is in cGM units
+    # Likewise mass and potential also
     pressure[0] = pressure_eos(rho_c, K, gamma)
     mass[0], potential[0] = 0., 0.
     
-    
-    p = pressure_eos(rho_c, K, gamma)
-    rho_test = rho_eos(p, K, gamma)
-    print(rho_test)
-    
-    
-    # Euler method
-    
-    for i,r in enumerate(radii[1:]):
-        p_n = pressure[i-1]
-        m_n = mass[i-1]
-        rho_n = rho_eos(p_n, K, gamma)
+    # Euler method  
+    for i,r_n in enumerate(radii):
+        if i != 0:
+            p_n = pressure[i-1]
+            m_n = mass[i-1]
         
-        epsilon_n = sp_energy_eos(p_n, rho_n, gamma) 
-        pressure[i] = p_n + (dr * dpdr(rho_n, epsilon_n, r, p_n, m_n))
-        mass[i] = m_n + (dr * dmdr(r, rho_n, epsilon_n))
+            rho_n = rho_eos(p_n, K, gamma)
+        
+            epsilon_n = sp_energy_eos(p_n, rho_n, gamma) 
+        
+            pressure[i] = p_n + (dr * dpdr(rho_n, epsilon_n, r_n, p_n, m_n))
+            mass[i] = m_n + (dr * dmdr(r_n, rho_n, epsilon_n))
 
-    print(mass[:10])
     
     
     
@@ -96,15 +105,22 @@ def main():
     """
     
    
-    #surfaceindex = where(pressure < 0)[0][0]
-#    radiusOfStar = (1 / convert_SI_Length(1))*radii[surfaceindex]
- #   massOfStar = (1 / convert_SI_Mass(1))
-  #  print('The radius of the star (meters): ' +str(radiusOfStar))
+    surfaceindex = where(pressure < 0)[0][0]
+    radiusOfStar = (1 / convert_SI_Length(1))*radii[surfaceindex]
+    massOfStar = (1 / convert_SI_Mass(1))*mass[surfaceindex]
+    print('The radius of the star (meters): ' +str(radiusOfStar))
+    print('The mass of the star (kg): ' +str(massOfStar))
     
     plt.close()
-    fig = plt.figure()   
+     
+    plt.subplots(1,2)
+    plt.subplot(121)
     plt.plot(radii,pressure)
     plt.xlabel('radius (cGM units)'), plt.ylabel('pressure (cGM units)')
+    
+    plt.subplot(122)
+    plt.plot(radii,mass)
+    plt.xlabel('radius (cGM units)'), plt.ylabel('mass (cGM units)')
     plt.show()
         
         
