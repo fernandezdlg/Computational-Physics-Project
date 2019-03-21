@@ -29,20 +29,17 @@ def dmdr(r,rho,epsilon):
 def dphidr(r,m,p):
     return (m+(4*pi*(r**3)*p))/(r*(r-(2*m)))
     
-def Gmass(r,rho,epsilon): # integrand
-    return 4*pi*r**2*rho*(1+epsilon/(c**2))
-    
 def Bmass(r,rho,M): # integrand, M: total mass
     #return 4*pi*r**2*rho*sqrt(det(g))
     return (sqrt(1-2*G*M/(r*c**2)))**(-1)*4*pi*r^2*rho
     
 def main():
-    # Rmax is set to 50km = 50,000m
+    # Rmax is set in meters
     # convert to cGM units
     Rmax = 50000
     Rmax = convert_SI_Length(Rmax)
 
-    N = 100
+    N = 200000
     radii = linspace(0,Rmax,N)
     dr = radii[1]-radii[0]
     
@@ -138,8 +135,8 @@ def main():
             phi_k1 = dphidr(r_n, m_n, p_n)
             phi_k2 = dphidr(r_n + 0.5*dr, m_n, p_n)
             phi_k3 = dphidr(r_n + dr, m_n, p_n)
-            potential[n] = phi_n + (dr/6.)*(phi_k1 + 4phi_k2 + phi_k3)
-    """        
+            potential[n] = phi_n + (dr/6.)*(phi_k1 + 4*phi_k2 + phi_k3)
+    """       
     
     # RK4 method
     

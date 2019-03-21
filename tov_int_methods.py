@@ -1,5 +1,5 @@
 from polytropic_eos import * 
-from tov_equations import *
+#from tov_equations import *
 
 def euler_int(radii, pressure, mass, dr, K, gamma):
     for n,r_n in enumerate(radii):
