@@ -19,7 +19,7 @@ def dphidr(m,r,p):
     return (m+4*pi*r**3*p/c**2)/(r*(r-2*G*m/c**2))
 """
 
-# These 'dpdr', 'dmdr' and 'dphidr' are in cGM units
+# These 'dpdr', 'dmdr', 'dphidr' and 'dmbdr' are in cGM units
 def dpdr(rho,epsilon,r,p,m):
     return -(rho*(1+epsilon)+p)*(m + 4*pi*(r**3)*p)/(r*(r-(2*m)))
    
@@ -27,19 +27,18 @@ def dmdr(r,rho,epsilon):
     return 4*pi*(r**2)*rho*(1+epsilon)
 
 def dphidr(r,m,p):
-    return (m+(4*pi*(r**3)*p))/(r*(r-(2*m)))
+    return -(m+(4*pi*(r**3)*p))/(r*(r-(2*m)))
     
-def Bmass(r,rho,M): # integrand, M: total mass
-    #return 4*pi*r**2*rho*sqrt(det(g))
-    return (sqrt(1-2*G*M/(r*c**2)))**(-1)*4*pi*r^2*rho
+def dmBdr(r,rho,m): 
+    return 4*pi*(r**2)*rho / sqrt(1 - 2*m/r)
     
 def main():
     # Rmax is set in meters
     # convert to cGM units
-    Rmax = 50000
+    Rmax = 15000
     Rmax = convert_SI_Length(Rmax)
 
-    N = 200000
+    N = 100000
     radii = linspace(0,Rmax,N)
     dr = radii[1]-radii[0]
     
@@ -172,8 +171,36 @@ def main():
     surfaceindex = where(pressure < 0)[0][0]
     radiusOfStar = (1 / convert_SI_Length(1))*radii[surfaceindex]
     massOfStar = (1 / convert_SI_Mass(1))*mass[surfaceindex]
-    print('The radius of the star (meters): ' +str(radiusOfStar))
-    print('The mass of the star (kg): ' +str(massOfStar))
+    print('The radius of the star (meters): '+str(radiusOfStar))
+    print('The mass of the star (kg): '+str(massOfStar))
+    
+    ### Unsure about the units of the potential and possibly comparing values in CGM units to 
+    ### Values in SI??
+    """
+    phiOfStar = potential[surfaceindex]
+    print('The potential of the star (?): '+str(phiOfStar))
+    schwarz_metric = 0.5 * log(1 - (2*mass[surfaceindex] / radii[surfaceindex]))
+    print('The Schwarzschild metric potential of the star (?): '+str(schwarz_metric))
+    """
+    
+    massBaryon = zeros(N)
+    
+    for n, r_n in enumerate(radii):
+        if n != 0:
+            mB_n = massBaryon[n-1]
+            m_n = mass[n-1]
+            p_n = pressure[n-1]
+            rho_n = rho_eos(p_n, K, gamma)
+        
+            mB_k1 = dmBdr(r_n, rho_n, massOfStar)
+            mB_k2 = dmBdr(r_n + 0.5*dr, rho_n, m_n)
+            mB_k3 = dmBdr(r_n + 0.5*dr, rho_n, m_n)
+            mB_k4 = dmBdr(r_n + dr, rho_n, m_n)
+        
+            massBaryon[n] = mB_n + (dr/6.)*(mB_k1 + 2*mB_k2 + 2*mB_k3 + mB_k4)
+        
+    baryonicMassOfStar = (1 / convert_SI_Mass(1)) * massBaryon[surfaceindex]
+    print('The baryonic mass of the star (kg): '+str(baryonicMassOfStar))
     
     plt.close()
      
@@ -184,6 +211,7 @@ def main():
     
     plt.subplot(132)
     plt.plot(radii,mass)
+    plt.plot(radii, massBaryon)
     plt.xlabel('radius (cGM units)'), plt.ylabel('mass (cGM units)')
     
     plt.subplot(133)
