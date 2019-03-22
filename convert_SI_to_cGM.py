@@ -41,6 +41,10 @@ def convert_SI_SPEnergy(spenergy):
 def convert_SI_Pressure(pressure):
     return pressure * convert_SI_Mass(1) * convert_SI_Length(1)**-1 * convert_SI_Time(1)**-2
 
+# potential is input in m^2 s^-2
+def convert_SI_Potential(potential):
+    return potential * c**-2
+
 """
 # test function used to check unit conversions are correct
 def test():
