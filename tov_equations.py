@@ -72,6 +72,8 @@ def RK3(radii, dr, pressure, mass, K, gamma):
             p_n = pressure[n-1]
             m_n = mass[n-1]
             
+            print(m_n)
+            
             rho_n = rho_eos(p_n, K, gamma)
             epsilon_n = sp_energy_eos(p_n, rho_n, gamma)
         
@@ -125,21 +127,38 @@ def RK4_baryonic(radii, dr, massBaryon, massOfStar, pressure, K, gamma):
             massBaryon[n] = mB_n + (dr/6.)*(mB_k1 + 2*mB_k2 + 2*mB_k3 + mB_k4)
             
     return massBaryon
+
+def RK4_potential(radii, dr, potential, mass, pressure, K, gamma, surfaceindex):
+    for n in range(surfaceindex-1, 0, -1):
+        r_n = radii[n]
+        p_n = pressure[n]
+        m_n = mass[n]
+        phi_n = potential[n]
+            
+        rho_n = rho_eos(p_n, K, gamma)
+        epsilon_n = sp_energy_eos(p_n, rho_n, gamma)
     
+        phi_k1 = dphidr(r_n, m_n, p_n)
+        phi_k2 = dphidr(r_n - 0.5*dr, m_n, p_n)
+        phi_k3 = dphidr(r_n - 0.5*dr, m_n, p_n)
+        phi_k4 = dphidr(r_n - dr, m_n, p_n)
+    
+        potential[n-1] = phi_n - (dr/6.)*(phi_k1 + 2*phi_k2 + 2*phi_k3 + phi_k4)
+    
+    return potential
 
 
-    
+
 def main():
     # Rmax is set in meters
     # convert to cGM units
-    Rmax = 15000
+    Rmax = 50000
     Rmax = convert_SI_Length(Rmax)
 
-    N = 10000
+    N = 100000
     radii = linspace(0,Rmax,N)
     dr = radii[1]-radii[0]
     
-    #ctr = [0,0,0]
     pressure, mass = zeros(N), zeros(N)
     
     # culmulative sums of pressure, mass and potential
@@ -155,23 +174,13 @@ def main():
     # initial pressure value is in cGM units
     # Likewise mass and potential also
     pressure[0] = pressure_eos(rho_c, K, gamma)
-    mass[0] = 0.
-    
-    
-    
-    ###############################################################
-    ### Work in progress ###
-    # Attempting to add Euler integration function to separate file to clean up code
-    #pressure, mass = euler_int(radii, pressure, mass, dr, K, gamma)
-    ###############################################################
-    
+    mass[0] = 0.  
     
     #pressure, mass = euler(radii, dr, pressure, mass, K, gamma)
     #pressure, mass = RK2(radii, dr, pressure, mass, K, gamma)
     #pressure, mass = RK3(radii, dr, pressure, mass, K, gamma)
     pressure, mass = RK4(radii, dr, pressure, mass, K, gamma)
     
- 
     # index of the point at the surface of the star
     surfaceindex = where(pressure < 0)[0][0]
     
@@ -184,6 +193,12 @@ def main():
     massOfStar = (1 / convert_SI_Mass(1))*mass[surfaceindex]
     print('The radius of the star (meters): '+str(radiusOfStar))
     print('The mass of the star (kg): '+str(massOfStar))
+    
+    
+    potential = zeros(surfaceindex)
+    potential[-1] = 0.5 * log(1 - (2*massOfStar_cGM / radiusOfStar_cGM))
+    
+    potential = RK4_potential(radii, dr, potential, mass, pressure, K, gamma, surfaceindex)
     
     ### Unsure about the units of the potential and possibly comparing values in CGM units to 
     ### Values in SI??
@@ -201,21 +216,6 @@ def main():
     massBaryon = zeros(N)
     massBaryon = RK4_baryonic(radii, dr, massBaryon, massOfStar_cGM, pressure, K, gamma)
     
-    """
-    for n, r_n in enumerate(radii):
-        if n != 0:
-            mB_n = massBaryon[n-1]
-            m_n = mass[n-1]
-            p_n = pressure[n-1]
-            rho_n = rho_eos(p_n, K, gamma)
-        
-            mB_k1 = dmBdr(r_n, rho_n, massOfStar)
-            mB_k2 = dmBdr(r_n + 0.5*dr, rho_n, massOfStar)
-            mB_k3 = dmBdr(r_n + 0.5*dr, rho_n, massOfStar)
-            mB_k4 = dmBdr(r_n + dr, rho_n, m_n)
-        
-            massBaryon[n] = mB_n + (dr/6.)*(mB_k1 + 2*mB_k2 + 2*mB_k3 + mB_k4)
-    """
     baryonicMassOfStar = (1 / convert_SI_Mass(1)) * massBaryon[surfaceindex]
     print('The baryonic mass of the star (kg): '+str(baryonicMassOfStar))
     
@@ -231,11 +231,9 @@ def main():
     plt.plot(radii, massBaryon)
     plt.xlabel('radius (cGM units)'), plt.ylabel('mass (cGM units)')
     
-    """
     plt.subplot(133)
-    plt.plot(radii,potential)
+    plt.plot(radii[:surfaceindex],potential)
     plt.xlabel('radius (cGM units)'), plt.ylabel('potential (cGM units)')
-    """
     
     plt.show()
         
