@@ -201,8 +201,9 @@ def maximum_mass_calc(radii, N, K, gamma):
     
     # maximum density of the star in kg m^-3
     N_rho = 100
-    rho_c_max = 50 * 10**17
-    rho_c_vals = linspace(rho_c_max/10, rho_c_max, N_rho)
+    rho_c_max = 10 * 10**17
+    rho_c_min = 1 * 10**17
+    rho_c_vals = linspace(rho_c_min, rho_c_max, N_rho)
     
     pressure, mass = zeros(N), zeros(N)
     starMasses = zeros(N_rho)
@@ -225,13 +226,13 @@ def maximum_mass_calc(radii, N, K, gamma):
     return rho_c_vals, starMasses
 
     
-def main():
+def poly_main():
     # Rmax is set in meters
     # convert to cGM units
     Rmax = 50000
     Rmax = convert_SI_Length(Rmax)
 
-    N = 5000
+    N = 2000
     radii = linspace(0,Rmax,N)
     
     # culmulative sums of pressure, mass and potential
@@ -333,9 +334,8 @@ def main():
     
     plt.show()
         
-        
-    
-main()
+          
+poly_main()
         
         
         

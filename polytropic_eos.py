@@ -13,4 +13,3 @@ def rho_eos(p, K, gamma):
     return (p / K)**(1/gamma)
 
 ### Maximally compact EOS equations
-def 
