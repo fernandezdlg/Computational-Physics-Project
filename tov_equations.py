@@ -201,7 +201,7 @@ def maximum_mass_calc(radii, N, K, gamma):
     
     # maximum density of the star in kg m^-3
     N_rho = 100
-    rho_c_max = 10 * 10**17
+    rho_c_max = 20 * 10**17
     rho_c_min = 1 * 10**17
     rho_c_vals = linspace(rho_c_min, rho_c_max, N_rho)
     
@@ -225,7 +225,7 @@ def maximum_mass_calc(radii, N, K, gamma):
         
     return rho_c_vals, starMasses
 
-    
+
 def poly_main():
     # Rmax is set in meters
     # convert to cGM units
@@ -287,7 +287,13 @@ def poly_main():
     # find star masses for different starting densities
     rho_c_vals, starMasses = maximum_mass_calc(radii, N, K, gamma)
     max_mass = (1/convert_SI_Mass(1)) * max(starMasses)
+    
+    # find optimal density for greatest max
+    max_index = argmax(starMasses)
+    print(max_index)
+    opt_rho = rho_c_vals[max_index]
     print('The maximum possible mass for K = '+str(K)+' and gamma = '+str(gamma)+' is (kg): '+str(max_mass))
+    print('The maximum possible starting density (with same K, gamma parameters) is (kg m^-3): '+str(opt_rho))
     
     
     ##### Using Newtonian equations #####
@@ -330,10 +336,10 @@ def poly_main():
     
     plt.subplot(144)
     plt.plot(rho_c_vals,starMasses)
-    plt.xlabel(r'$\rho_c$ (cGM units)'), plt.ylabel('star mass (cGM units)')
+    plt.xlabel(r'$\rho_c$ (kg m^-3)'), plt.ylabel('star mass (cGM units)')
     
     plt.show()
-        
+         
           
 poly_main()
         

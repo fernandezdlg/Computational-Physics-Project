@@ -41,30 +41,59 @@ def compact_main():
     # conditions set in dimensionless units
     # in maximally compact configuration
     # q values are confined by q_max <= q <= 0
-    q_max = 2.026     
-    
-    # x values are confined from 0 (at centre of star) to minimum radius (at maximum compactness)
-    x_min = 0.2404
-    x_vals = linspace(0, x_min, N)
+    q_max = 2.026
     
     q_vals, y_vals = zeros(N), zeros(N)
     q_vals[0] = q_max
     
-    q_vals, y_vals = compact_RK4(x_vals, q_vals, y_vals)
+    x_bound = 1.0
+    x_vals = linspace(0, x_bound, N)
     
-    print(q_vals)
-    print(y_vals)
+    
+    
+    # maximum e_0 value
+    e_0_max = 6 * 10**17
+    e_0_vals = linspace(0, e_0_max, 100)
+        
+    maxmass_vals = zeros(100)
+    radius_vals = zeros(100)
+    
+    for i, e_0 in enumerate(e_0_vals):
+        q_max = 2.026
+    
+        q_vals, y_vals = zeros(N), zeros(N)
+        q_vals[0] = q_max
+    
+        x_bound = 1
+        x_vals = linspace(0, x_bound, N)
+        
+        q_vals, y_vals = compact_RK4(x_vals, q_vals, y_vals)
+        
+        # index of the point at the surface of the star
+        surfaceindex = where(q_vals < 0)[0][0]
+        
+        # radius and mass in cGM units
+        maxmass = y_vals[surfaceindex] * (c**4) / (G**3 * e_0)**0.5
+        maxmass = (y_vals[surfaceindex] / (e_0*convert_SI_Density(1))**0.5)*(1/convert_SI_Mass(1))
+        radius = (x_vals[surfaceindex] / (e_0*convert_SI_Density(1))**0.5)*(1/convert_SI_Length(1))
+        
+        maxmass_vals[i] = maxmass
+        radius_vals[i] = radius
+        
+    chosenindex = where(radius_vals < 13800)[0][0]
+    print('Maximum mass (with the same radius as the polytropic EoS with standard rho_c, K, gamma) is (kg): '+str(maxmass_vals[chosenindex]))    
+        
     
     plt.close()
-    
+
     plt.subplots(1,2)
     plt.subplot(121)
-    plt.plot(x_vals,q_vals)
-    plt.xlabel('x (dimensionless)'), plt.ylabel('q (dimensionless)')
+    plt.plot(e_0_vals, maxmass_vals)
+    plt.xlabel('surface energy density (SI)'), plt.ylabel('mass (kg)')
     
     plt.subplot(122)
-    plt.plot(x_vals,y_vals)
-    plt.xlabel('x (dimensionless)'), plt.ylabel('y (dimensionless)')
+    plt.plot(e_0_vals, radius_vals)
+    plt.xlabel('surface energy density (SI)'), plt.ylabel('radius (m)')
     
     plt.show()
     

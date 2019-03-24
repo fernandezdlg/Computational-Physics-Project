@@ -13,3 +13,9 @@ def rho_eos(p, K, gamma):
     return (p / K)**(1/gamma)
 
 ### Maximally compact EOS equations
+def pressure_eos_comp(e, e_0):
+    if e < e_0:
+        return 0
+    else:
+        return e - e_0
+    
