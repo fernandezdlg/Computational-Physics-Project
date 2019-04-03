@@ -8,7 +8,6 @@ from int_methods import *
 from dydt import *
 from convert_SI_to_cGM import *
 import matplotlib.pyplot as plt
- 
 
 #==============================================================================
 # For Plotting
@@ -53,7 +52,7 @@ def maximum_mass_calc(radii, N, K, gamma):
         
         # index of the point at the surface of the star
         # use index to find the mass of star
-        surfaceindex = where(pressure < 0)[0][0]
+        surfaceindex = where(pressure < 0.)[0][0]
         massOfStar_cGM = mass[surfaceindex]
         
         starMasses[i] = massOfStar_cGM
@@ -66,7 +65,7 @@ def poly_main():
     # convert to cGM units
     Rmax = 50000
     Rmax = convert_SI_Length(Rmax)
-
+    
     N = 2000
     radii = linspace(0,Rmax,N)
     
@@ -76,9 +75,9 @@ def poly_main():
     rho_c = 5.0 * 10**17
     rho_c = convert_SI_Density(rho_c)
     
-    # K and gamma are in cGM units already
+    # K and gamma are in cGM units already [This is independent of m or cm etc.]
     gamma = 2.75
-    K = 30000 # 1.687024e-5 #30000 in cm,g
+    K = 30000
     
     pressure, mass = zeros(N), zeros(N)
     
@@ -109,7 +108,7 @@ def poly_main():
     potential = zeros(surfaceindex)
     potential[-1] = 0.5 * log(1 - (2*massOfStar_cGM / radiusOfStar_cGM))
     potential = RK4_potential(radii, potential, mass, pressure, K, gamma)
-
+    
     nearCentrePotential = potential[1] * (1/convert_SI_Potential(1))
     print('The near centre of mass potential is (J/kg): '+str(nearCentrePotential))
     
@@ -175,12 +174,12 @@ def poly_main():
     plt.subplot(144)
     plt.plot(rho_c_vals,starMasses)
     plt.xlabel(r'$\rho_c$ (kg m^-3)'), plt.ylabel('star mass (cGM units)')
-    plt.title('Star masses for different center energy densities')
+    plt.title('Star masses for different densities')
     plt.tight_layout()
     plt.show()
          
           
 poly_main()
-        
-        
-        
+    
+    
+    

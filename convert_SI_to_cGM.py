@@ -2,15 +2,15 @@
 # ensure SI units used are kilograms for mass, metres for distance and seconds for time
 
 # speed of light in vacuum as quoted by NIST CODATA in SI [m s^-1]
-c = 2.99792458 * 10**8
+c = 2.99792458 * 10**8 
 c_err = 0.0
 
 # gravitational constant as quoted by NIST CODATA in SI [m^3 kg^-1 s^-2]
-G = 6.67408 * 10**-11
+G = 6.67408 * 10**-11 
 G_err = 0.00031 * 10**-11
 
 # solar mass constant as quoted by NIST CODATA in SI [kg]
-M0 = 1.98847 * 10**30
+M0 = 1.98847 * 10**30 
 M0_err = 0.00007 * 10**30
 
 # mass is input in kg

@@ -109,18 +109,17 @@ def RK4_baryonic(radii, massBaryon, massOfStar, pressure, K, gamma):
         
             mB_k1 = dmBdr(r_n, rho_n, massOfStar)
             mB_k2 = dmBdr(r_n + 0.5*dr, rho_n, massOfStar)
-            mB_k3 = dmBdr(r_n + 0.5*dr, rho_n, massOfStar)
+            #mB_k3 = dmBdr(r_n + 0.5*dr, rho_n, massOfStar)
             mB_k4 = dmBdr(r_n + dr, rho_n, massOfStar)
         
-            massBaryon[n] = mB_n + (dr/6.)*(mB_k1 + 2*mB_k2 + 2*mB_k3 + mB_k4)
-            
+            massBaryon[n] = mB_n + (dr/6.)*(mB_k1 + 4*mB_k2 +mB_k4)# + 2*mB_k3 + mB_k4)
     return massBaryon
 
 def RK4_potential(radii, potential, mass, pressure, K, gamma):
     dr = radii[1]-radii[0]
-    surfaceindex = len(potential)
+    N = len(potential)
     
-    for n in range(surfaceindex-1, 0, -1):
+    for n in range(N-1, 0, -1):
         r_n = radii[n]
         p_n = pressure[n]
         m_n = mass[n]
@@ -131,10 +130,10 @@ def RK4_potential(radii, potential, mass, pressure, K, gamma):
     
         phi_k1 = dphidr(r_n, m_n, p_n)
         phi_k2 = dphidr(r_n - 0.5*dr, m_n, p_n)
-        phi_k3 = dphidr(r_n - 0.5*dr, m_n, p_n)
+        #phi_k3 = dphidr(r_n - 0.5*dr, m_n, p_n)
         phi_k4 = dphidr(r_n - dr, m_n, p_n)
     
-        potential[n-1] = phi_n - (dr/6.)*(phi_k1 + 2*phi_k2 + 2*phi_k3 + phi_k4)
+        potential[n-1] = phi_n - (dr/6.)*(phi_k1 + 4*phi_k2 + phi_k4)# + 2*phi_k3
     
     return potential
 

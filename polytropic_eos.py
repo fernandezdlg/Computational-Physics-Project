@@ -4,18 +4,18 @@
 ### polytropic EOS equations
 # return specific energy from pressure p , density rho and gamma constant
 def sp_energy_eos(p, rho, gamma):
-    return p / ((gamma - 1)*rho) 
+    return p / ((gamma - 1.)*rho) 
 
 def pressure_eos(rho, K, gamma):
     return K * (rho**gamma)
     
 def rho_eos(p, K, gamma):
-    return (p / K)**(1/gamma)
+    return (p / K)**(1./gamma)
 
 ### Maximally compact EOS equations
 def pressure_eos_comp(e, e_0):
     if e < e_0:
-        return 0
+        return 0.
     else:
         return e - e_0
     
