@@ -1,199 +1,34 @@
 # polytopic_eos.py contains function that returns the value of the specific internal energy of a polytopic fluid
 # outlined as e = P / (y - 1)*rho , where P is some constant, gamma is the polytopic constant
+# int_methods contains the integrations methods used in this script
 
 from scipy import *
 from polytropic_eos import *
+from int_methods import *
+from dydt import *
 from convert_SI_to_cGM import *
 import matplotlib.pyplot as plt
  
-# These 'dpdr', 'dmdr' and 'dphidr' are in SI units
-"""
-def dpdr(rho,epsilon,r,p,m):
-    return -G*(rho*(1+epsilon/c**2)+p/c**2)*(m+4*pi*r**3*p/c**2)/(r*(r-(2*G*m/c**2)))
-    
-def dmdr(r,rho,epsilon):
-    return 4*pi*r**2*rho*(1+epsilon/(c**2))
-    
-def dphidr(m,r,p):
-    return (m+4*pi*r**3*p/c**2)/(r*(r-2*G*m/c**2))
-"""
-### TOV equations ###
-# cGM units used thoroughout
-def dpdr(rho,epsilon,r,p,m):
-    return -(rho*(1+epsilon)+p)*(m + 4*pi*(r**3)*p)/(r*(r-(2*m)))
-   
-def dmdr(r,rho,epsilon):
-    return 4*pi*(r**2)*rho*(1+epsilon)
 
-def dphidr(r,m,p):
-    return -(m+(4*pi*(r**3)*p))/(r*(r-(2*m)))
-    
-def dmBdr(r,rho,m): 
-    return 4*pi*(r**2)*rho / sqrt(1 - 2*m/r)
-
-### Newtonian equations ###
-# cGM units used thoroughout
-def dpdr_newton(rho,r,m):
-    return -(rho*m)/(r**2)
-
-def dmdr_newton(r, rho):
-    return 4*pi*(r**2)*rho
-
-def dphidr_newton(r,m,p):
-    return -m/(r**2)
+#==============================================================================
+# For Plotting
+#==============================================================================
+import matplotlib.pylab as pylab
+# To plot with Serif font
+import matplotlib
+matplotlib.rcParams['mathtext.fontset'] = 'stix'
+matplotlib.rcParams['font.family'] = 'STIXGeneral'
+matplotlib.pyplot.title(r'Neutron Stars Properties')
+# Plotting parameters
+params = {'legend.fontsize':'small',
+          'figure.figsize': (12, 6),
+          'axes.labelsize': 'x-large',
+          'axes.titlesize': 'x-large',
+          'xtick.labelsize':'medium',
+          'ytick.labelsize':'medium'}
+pylab.rcParams.update(params)
 
 
-### Integration methods ###
-def euler(radii, pressure, mass, K, gamma):
-    dr = radii[1]-radii[0]
-    
-    for n,r_n in enumerate(radii):
-        if n != 0:
-            p_n = pressure[n-1]
-            m_n = mass[n-1]
-        
-            rho_n = rho_eos(p_n, K, gamma)
-            epsilon_n = sp_energy_eos(p_n, rho_n, gamma) 
-        
-            pressure[n] = p_n + (dr * dpdr(rho_n, epsilon_n, r_n, p_n, m_n))
-            mass[n] = m_n + (dr * dmdr(r_n, rho_n, epsilon_n))
-
-    return pressure, mass
-
-def RK2(radii, pressure, mass, K, gamma):
-    dr = radii[1]-radii[0]
-    
-    for n,r_n in enumerate(radii):
-        if n != 0:
-            p_n = pressure[n-1]
-            m_n = mass[n-1]
-            
-            rho_n = rho_eos(p_n, K, gamma)
-            epsilon_n = sp_energy_eos(p_n, rho_n, gamma)
-        
-            p_k1 = dpdr(rho_n, epsilon_n, r_n, p_n, m_n)
-            p_k2 = dpdr(rho_n, epsilon_n, r_n + 0.5*dr, p_n + 0.5*dr*p_k1, m_n)
-            pressure[n] = p_n + dr*p_k2
-    
-            m_k1 = dmdr(r_n, rho_n, epsilon_n)
-            m_k2 = dmdr(r_n + 0.5*dr, rho_n, epsilon_n)
-            mass[n] = m_n + dr*m_k2
-            
-    return pressure, mass
-
-def RK3(radii, pressure, mass, K, gamma):
-    dr = radii[1]-radii[0]
-    
-    for n,r_n in enumerate(radii):
-        if n != 0:
-            p_n = pressure[n-1]
-            m_n = mass[n-1]
-            
-            print(m_n)
-            
-            rho_n = rho_eos(p_n, K, gamma)
-            epsilon_n = sp_energy_eos(p_n, rho_n, gamma)
-        
-            p_k1 = dpdr(rho_n, epsilon_n, r_n, p_n, m_n)
-            p_k2 = dpdr(rho_n, epsilon_n, r_n + 0.5*dr, p_n + 0.5*dr*p_k1, m_n)
-            p_k3 = dpdr(rho_n, epsilon_n, r_n + dr, p_n - dr*p_k1 + 3*dr*p_k2, m_n)
-            pressure[n] = p_n + (dr/6.)*(p_k1 + 4*p_k2 + p_k3)
-    
-            m_k1 = dmdr(r_n, rho_n, epsilon_n)
-            m_k2 = dmdr(r_n + 0.5*dr, rho_n, epsilon_n) 
-            m_k3 = dmdr(r_n + dr, rho_n, epsilon_n)
-            mass[n] = m_n + (dr/6.)*(m_k1 + 4*m_k2 + m_k3)
-            
-    return pressure, mass
-
-def RK4(radii, pressure, mass, K, gamma):
-    dr = radii[1]-radii[0]
-    
-    for n,r_n in enumerate(radii):
-        if n != 0:
-            p_n = pressure[n-1]
-            m_n = mass[n-1]
-            
-            rho_n = rho_eos(p_n, K, gamma)
-            epsilon_n = sp_energy_eos(p_n, rho_n, gamma)
-        
-            p_k1 = dpdr(rho_n, epsilon_n, r_n, p_n, m_n)
-            p_k2 = dpdr(rho_n, epsilon_n, r_n + 0.5*dr, p_n + 0.5*dr*p_k1, m_n)
-            p_k3 = dpdr(rho_n, epsilon_n, r_n + 0.5*dr, p_n + 0.5*dr*p_k2, m_n)
-            p_k4 = dpdr(rho_n, epsilon_n, r_n + dr, p_n + dr*p_k3, m_n)
-            pressure[n] = p_n + (dr/6.)*(p_k1 + 2*p_k2 + 2*p_k3 + p_k4)
-    
-            m_k1 = dmdr(r_n, rho_n, epsilon_n)
-            m_k2 = dmdr(r_n + 0.5*dr, rho_n, epsilon_n)
-            m_k3 = dmdr(r_n + 0.5*dr, rho_n, epsilon_n)
-            m_k4 = dmdr(r_n + dr, rho_n, epsilon_n)
-            mass[n] = m_n + (dr/6.)*(m_k1 + 2*m_k2 + 2*m_k3 + m_k4)
-    
-    return pressure, mass
-
-def RK4_baryonic(radii, massBaryon, massOfStar, pressure, K, gamma):
-    dr = radii[1]-radii[0]
-    
-    for n, r_n in enumerate(radii):
-        if n != 0:
-            mB_n = massBaryon[n-1]
-            p_n = pressure[n-1]
-            rho_n = rho_eos(p_n, K, gamma)
-        
-            mB_k1 = dmBdr(r_n, rho_n, massOfStar)
-            mB_k2 = dmBdr(r_n + 0.5*dr, rho_n, massOfStar)
-            mB_k3 = dmBdr(r_n + 0.5*dr, rho_n, massOfStar)
-            mB_k4 = dmBdr(r_n + dr, rho_n, massOfStar)
-        
-            massBaryon[n] = mB_n + (dr/6.)*(mB_k1 + 2*mB_k2 + 2*mB_k3 + mB_k4)
-            
-    return massBaryon
-
-def RK4_potential(radii, potential, mass, pressure, K, gamma):
-    dr = radii[1]-radii[0]
-    surfaceindex = len(potential)
-    
-    for n in range(surfaceindex-1, 0, -1):
-        r_n = radii[n]
-        p_n = pressure[n]
-        m_n = mass[n]
-        phi_n = potential[n]
-            
-        rho_n = rho_eos(p_n, K, gamma)
-        epsilon_n = sp_energy_eos(p_n, rho_n, gamma)
-    
-        phi_k1 = dphidr(r_n, m_n, p_n)
-        phi_k2 = dphidr(r_n - 0.5*dr, m_n, p_n)
-        phi_k3 = dphidr(r_n - 0.5*dr, m_n, p_n)
-        phi_k4 = dphidr(r_n - dr, m_n, p_n)
-    
-        potential[n-1] = phi_n - (dr/6.)*(phi_k1 + 2*phi_k2 + 2*phi_k3 + phi_k4)
-    
-    return potential
-
-def Newton_RK4(radii, pressure, mass, K, gamma):
-    dr = radii[1]-radii[0]
-    
-    for n,r_n in enumerate(radii):
-        if n != 0:
-            p_n = pressure[n-1]
-            m_n = mass[n-1]
-        
-            rho_n = rho_eos(p_n, K, gamma)
-        
-            p_k1 = dpdr_newton(rho_n, r_n, m_n)
-            p_k2 = dpdr_newton(rho_n, r_n + 0.5*dr, m_n)
-            p_k3 = dpdr_newton(rho_n, r_n + 0.5*dr, m_n)
-            p_k4 = dpdr_newton(rho_n, r_n + dr, m_n)
-            pressure[n] = p_n + (dr/6.)*(p_k1 + 2*p_k2 + 2*p_k3 + p_k4)
-            
-            m_k1 = dmdr_newton(r_n, rho_n)
-            m_k2 = dmdr_newton(r_n + 0.5*dr, rho_n)
-            m_k3 = dmdr_newton(r_n + 0.5*dr, rho_n)
-            m_k4 = dmdr_newton(r_n + dr, rho_n)
-            mass[n] = m_n + (dr/6.)*(m_k1 + 2*m_k2 + 2*m_k3 + m_k4)
-    
-    return pressure, mass
 
 def maximum_mass_calc(radii, N, K, gamma):
     # dr = difference in radius
@@ -243,7 +78,7 @@ def poly_main():
     
     # K and gamma are in cGM units already
     gamma = 2.75
-    K = 30000 
+    K = 30000 # 1.687024e-5 #30000 in cm,g
     
     pressure, mass = zeros(N), zeros(N)
     
@@ -320,24 +155,28 @@ def poly_main():
     
     plt.subplots(1,4)
     plt.subplot(141)
-    plt.plot(radii,pressure)
-    plt.plot(radii,pressure_newton)
+    plt.plot(radii,pressure, label='Relativistic Pressure')
+    plt.plot(radii,pressure_newton, label='Newtonian Pressure')
     plt.xlabel('radius (cGM units)'), plt.ylabel('pressure (cGM units)')
+    plt.legend
     
     plt.subplot(142)
-    plt.plot(radii,mass)
-    plt.plot(radii,massBaryon)
-    plt.plot(radii,mass_newton)
+    plt.plot(radii,mass, label='Relativistic Mass')
+    plt.plot(radii,massBaryon, label='Baryonic Mass')
+    plt.plot(radii,mass_newton, label='Newtonian Mass')
     plt.xlabel('radius (cGM units)'), plt.ylabel('mass (cGM units)')
+    plt.legend
     
     plt.subplot(143)
     plt.plot(radii[:surfaceindex],potential)
     plt.xlabel('radius (cGM units)'), plt.ylabel('potential (cGM units)')
+    plt.title('Star Gravitational Potential')
     
     plt.subplot(144)
     plt.plot(rho_c_vals,starMasses)
     plt.xlabel(r'$\rho_c$ (kg m^-3)'), plt.ylabel('star mass (cGM units)')
-    
+    plt.title('Star masses for different center energy densities')
+    plt.tight_layout()
     plt.show()
          
           
