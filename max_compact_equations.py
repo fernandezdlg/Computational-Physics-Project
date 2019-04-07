@@ -52,11 +52,12 @@ def compact_main():
     
     
     # maximum e_0 value
+    N_energy = 200
     e_0_max = 6 * 10**17
-    e_0_vals = linspace(0, e_0_max, 100)
+    e_0_vals = linspace(0, e_0_max, N_energy)
         
-    maxmass_vals = zeros(100)
-    radius_vals = zeros(100)
+    maxmass_vals = zeros(N_energy)
+    radius_vals = zeros(N_energy)
     
     for i, e_0 in enumerate(e_0_vals):
         q_max = 2.026
@@ -83,17 +84,20 @@ def compact_main():
     chosenindex = where(radius_vals < 13800)[0][0]
     print('Maximum mass (with the same radius as the polytropic EoS with standard rho_c, K, gamma) is (kg): '+str(maxmass_vals[chosenindex]))    
         
-    
     plt.close()
 
+    """
     plt.subplots(1,2)
     plt.subplot(121)
     plt.plot(e_0_vals, maxmass_vals)
-    plt.xlabel('surface energy density (SI)'), plt.ylabel('mass (kg)')
+    plt.xlabel('surface energy density ($Jm^{-2}$)'), plt.ylabel('mass (kg)')
+    plt.title('Mass (at r=radius) of neutron star (for maximally stiff EoS)')
     
-    plt.subplot(122)
+    """
+    #plt.subplot(122)
     plt.plot(e_0_vals, radius_vals)
-    plt.xlabel('surface energy density (SI)'), plt.ylabel('radius (m)')
+    plt.xlabel('surface energy density ($Jm^{-2}$)'), plt.ylabel('radius (m)')
+    plt.title('Radius of neutron star (for maximally stiff EoS)')
     
     plt.show()
     

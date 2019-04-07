@@ -8,8 +8,6 @@ from convert_SI_to_cGM import *
 import matplotlib.pyplot as plt
  
 
-
-
 ### Integration methods ###
 def euler(radii, pressure, mass, K, gamma):
     dr = radii[1]-radii[0]

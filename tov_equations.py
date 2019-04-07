@@ -34,17 +34,18 @@ def maximum_mass_calc(radii, N, K, gamma):
     dr = radii[1]-radii[0]
     
     # maximum density of the star in kg m^-3
-    N_rho = 100
-    rho_c_max = 20 * 10**17
+    N_rho = 1000
+    rho_c_max = 101 * 10**17
     rho_c_min = 1 * 10**17
     rho_c_vals = linspace(rho_c_min, rho_c_max, N_rho)
+    
+    # convert to cGM units
+    rho_c_vals = convert_SI_Density(1)*rho_c_vals
     
     pressure, mass = zeros(N), zeros(N)
     starMasses = zeros(N_rho)
     
     for i, rho_c in enumerate(rho_c_vals):
-        rho_c = convert_SI_Density(rho_c)
-        
         pressure[0] = pressure_eos(rho_c, K, gamma)
         mass[0] = 0.0
         
@@ -101,9 +102,9 @@ def poly_main():
     # radius and mass in SI units
     radiusOfStar = (1 / convert_SI_Length(1))*radiusOfStar_cGM
     massOfStar = (1 / convert_SI_Mass(1))*massOfStar_cGM
+    print('--------------------')
     print('The radius of the star (meters): '+str(radiusOfStar))
     print('The mass of the star (kg): '+str(massOfStar))
-    
     
     potential = zeros(surfaceindex)
     potential[-1] = 0.5 * log(1 - (2*massOfStar_cGM / radiusOfStar_cGM))
@@ -124,11 +125,9 @@ def poly_main():
     
     # find optimal density for greatest max
     max_index = argmax(starMasses)
-    print(max_index)
-    opt_rho = rho_c_vals[max_index]
+    opt_rho = rho_c_vals[max_index] * (1/convert_SI_Density(1))
     print('The maximum possible mass for K = '+str(K)+' and gamma = '+str(gamma)+' is (kg): '+str(max_mass))
     print('The maximum possible starting density (with same K, gamma parameters) is (kg m^-3): '+str(opt_rho))
-    
     
     ##### Using Newtonian equations #####
     pressure_newton, mass_newton = zeros(N), zeros(N)
@@ -149,35 +148,37 @@ def poly_main():
     massOfStar_newton = (1 / convert_SI_Mass(1))*massOfStar_newton_cGM
     print('The newton radius of the star (meters): '+str(radiusOfStar_newton))
     print('The newton mass of the star (kg): '+str(massOfStar_newton))
+    print('--------------------')
     
     plt.close()
     
+    
     plt.subplots(1,4)
     plt.subplot(141)
-    plt.plot(radii,pressure, label='Relativistic Pressure')
-    plt.plot(radii,pressure_newton, label='Newtonian Pressure')
-    plt.xlabel('radius (cGM units)'), plt.ylabel('pressure (cGM units)')
-    plt.legend
+    plt.plot(radii,pressure, label=r'Relativistic (Polytropic) ($\gamma$='+str(gamma)+',K='+str(K)+')')
+    plt.plot(radii,pressure_newton, label=r'Newton (Polytropic) ($\gamma$='+str(gamma)+',K='+str(K)+')')
+    plt.xlabel('radius (cGM units)'),plt.ylabel('pressure (cGM units)'), plt.title('Pressure of neutron star')
+    plt.legend()
     
     plt.subplot(142)
-    plt.plot(radii,mass, label='Relativistic Mass')
-    plt.plot(radii,massBaryon, label='Baryonic Mass')
-    plt.plot(radii,mass_newton, label='Newtonian Mass')
-    plt.xlabel('radius (cGM units)'), plt.ylabel('mass (cGM units)')
-    plt.legend
+    plt.plot(radii,mass, label=r'Relativistic (Polytropic) ($\gamma$='+str(gamma)+',K='+str(K)+')')
+    plt.plot(radii,massBaryon, label=r'Baryonic (Polytropic) ($\gamma$='+str(gamma)+',K='+str(K)+')')
+    plt.plot(radii,mass_newton, label=r'Newton (Polytropic) ($\gamma$='+str(gamma)+',K='+str(K)+')')
+    plt.xlabel('radius (cGM units)'), plt.ylabel('mass (cGM units)'), plt.title('Mass of neutron star')
+    plt.legend()
     
     plt.subplot(143)
     plt.plot(radii[:surfaceindex],potential)
     plt.xlabel('radius (cGM units)'), plt.ylabel('potential (cGM units)')
-    plt.title('Star Gravitational Potential')
+    plt.title('Gravitational potential of neutron star ($\gamma$='+str(gamma)+',K='+str(K)+')')
     
     plt.subplot(144)
     plt.plot(rho_c_vals,starMasses)
     plt.xlabel(r'$\rho_c$ (kg m^-3)'), plt.ylabel('star mass (cGM units)')
-    plt.title('Star masses for different densities')
+    plt.title(r'Star masses for different densities ($\gamma$='+str(gamma)+',K='+str(K)+')')
     plt.tight_layout()
     plt.show()
-         
+    
           
 poly_main()
     
