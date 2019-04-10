@@ -19,12 +19,12 @@ matplotlib.rcParams['mathtext.fontset'] = 'stix'
 matplotlib.rcParams['font.family'] = 'STIXGeneral'
 matplotlib.pyplot.title(r'Neutron Stars Properties')
 # Plotting parameters
-params = {'legend.fontsize':'small',
+params = {'legend.fontsize':'xx-large',
           'figure.figsize': (12, 6),
-          'axes.labelsize': 'x-large',
-          'axes.titlesize': 'x-large',
-          'xtick.labelsize':'medium',
-          'ytick.labelsize':'medium'}
+          'axes.labelsize': 'xx-large',
+          'axes.titlesize': 'xx-large',
+          'xtick.labelsize':'xx-large',
+          'ytick.labelsize':'xx-large'}
 pylab.rcParams.update(params)
 
 
@@ -152,7 +152,7 @@ def poly_main():
     
     plt.close()
     
-    
+    """
     plt.subplots(1,4)
     plt.subplot(141)
     plt.plot(radii,pressure, label=r'Relativistic (Polytropic) ($\gamma$='+str(gamma)+',K='+str(K)+')')
@@ -171,10 +171,11 @@ def poly_main():
     plt.plot(radii[:surfaceindex],potential)
     plt.xlabel('radius (cGM units)'), plt.ylabel('potential (cGM units)')
     plt.title('Gravitational potential of neutron star ($\gamma$='+str(gamma)+',K='+str(K)+')')
+    """
     
-    plt.subplot(144)
+    #plt.subplot(144)
     plt.plot(rho_c_vals,starMasses)
-    plt.xlabel(r'$\rho_c$ (kg m^-3)'), plt.ylabel('star mass (cGM units)')
+    plt.xlabel(r'$\rho_c$ (cGM units)'), plt.ylabel('star mass (cGM units)')
     plt.title(r'Star masses for different densities ($\gamma$='+str(gamma)+',K='+str(K)+')')
     plt.tight_layout()
     plt.show()

@@ -48,8 +48,7 @@ def convert_SI_Potential(potential):
 """
 # test function used to check unit conversions are correct
 def test():
-    testVal = 1
-    newTestVal = convert_SI_Pressure(testVal)
+    newTestVal = convert_SI_Pressure(1)
     print(newTestVal)
     
 test()
