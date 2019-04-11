@@ -19,12 +19,12 @@ matplotlib.rcParams['mathtext.fontset'] = 'stix'
 matplotlib.rcParams['font.family'] = 'STIXGeneral'
 matplotlib.pyplot.title(r'Neutron Stars Properties')
 # Plotting parameters
-params = {'legend.fontsize':'xx-large',
+params = {'legend.fontsize':'small',
           'figure.figsize': (12, 6),
-          'axes.labelsize': 'xx-large',
-          'axes.titlesize': 'xx-large',
-          'xtick.labelsize':'xx-large',
-          'ytick.labelsize':'xx-large'}
+          'axes.labelsize': 'large',
+          'axes.titlesize': 'x-large',
+          'xtick.labelsize':'medium',
+          'ytick.labelsize':'medium'}
 pylab.rcParams.update(params)
 
 
@@ -150,37 +150,48 @@ def poly_main():
     print('The newton mass of the star (kg): '+str(massOfStar_newton))
     print('--------------------')
     
-    plt.close()
+    plt.close('all')
     
-    """
-    plt.subplots(1,4)
-    plt.subplot(141)
+    #plt.subplots(1,4)
+    #plt.subplot(141)
+    plt.figure()
     plt.plot(radii,pressure, label=r'Relativistic (Polytropic) ($\gamma$='+str(gamma)+',K='+str(K)+')')
     plt.plot(radii,pressure_newton, label=r'Newton (Polytropic) ($\gamma$='+str(gamma)+',K='+str(K)+')')
     plt.xlabel('radius (cGM units)'),plt.ylabel('pressure (cGM units)'), plt.title('Pressure of neutron star')
     plt.legend()
+    plt.tight_layout()
+    #plt.savefig('Pressure_Radius_1.png', format='png', dpi=300)
     
-    plt.subplot(142)
+    
+    #plt.subplot(142)
+    plt.figure()
     plt.plot(radii,mass, label=r'Relativistic (Polytropic) ($\gamma$='+str(gamma)+',K='+str(K)+')')
     plt.plot(radii,massBaryon, label=r'Baryonic (Polytropic) ($\gamma$='+str(gamma)+',K='+str(K)+')')
     plt.plot(radii,mass_newton, label=r'Newton (Polytropic) ($\gamma$='+str(gamma)+',K='+str(K)+')')
     plt.xlabel('radius (cGM units)'), plt.ylabel('mass (cGM units)'), plt.title('Mass of neutron star')
     plt.legend()
+    plt.tight_layout()
+    #plt.savefig('Mass_Radius_1.png', format='png', dpi=300)
     
-    plt.subplot(143)
+    
+    #plt.subplot(143)
+    plt.figure()
     plt.plot(radii[:surfaceindex],potential)
     plt.xlabel('radius (cGM units)'), plt.ylabel('potential (cGM units)')
     plt.title('Gravitational potential of neutron star ($\gamma$='+str(gamma)+',K='+str(K)+')')
-    """
+    plt.tight_layout()
     
     #plt.subplot(144)
+    plt.figure()
     plt.plot(rho_c_vals,starMasses)
     plt.xlabel(r'$\rho_c$ (cGM units)'), plt.ylabel('star mass (cGM units)')
     plt.title(r'Star masses for different densities ($\gamma$='+str(gamma)+',K='+str(K)+')')
     plt.tight_layout()
     plt.show()
+    #plt.savefig('StarMass_Density_1.png', format='png', dpi=300)
     
-          
+
+      
 poly_main()
     
     
