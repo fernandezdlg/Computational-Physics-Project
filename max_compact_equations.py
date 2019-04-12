@@ -90,21 +90,21 @@ def compact_main():
     #plt.subplot(121)
     plt.figure()
     plt.plot(e_0_vals, maxmass_vals)
-    plt.xlabel('surface energy density ($Jm^{-2}$)'), plt.ylabel('mass (kg)')
+    plt.xlabel('Surface energy density ($Jm^{-2}$)'), plt.ylabel('Mass (kg)')
     plt.title('Mass (at r=radius) of neutron star (for maximally stiff EoS)')
     plt.tight_layout()
     plt.show()
-    #plt.savefig('StarMass_SEDensity_MS_1.png', format='png', dpi=300)
+#    plt.savefig('StarMass_SEDensity_MS_11.png', format='png', dpi=300)
     
     
     #plt.subplot(122)
     plt.figure()
     plt.plot(e_0_vals, radius_vals)
-    plt.xlabel('surface energy density ($Jm^{-2}$)'), plt.ylabel('radius (m)')
+    plt.xlabel('Surface energy density ($Jm^{-2}$)'), plt.ylabel('Radius (m)')
     plt.title('Radius of neutron star (for maximally stiff EoS)')
     plt.tight_layout()
     plt.show()
-    #plt.savefig('Radius_SEDensity_MS_1.png', format='png', dpi=300)
+#    plt.savefig('Radius_SEDensity_MS_11.png', format='png', dpi=300)
 
 
 compact_main()
