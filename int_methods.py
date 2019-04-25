@@ -56,7 +56,7 @@ def RK3(radii, pressure, mass, K, gamma):
             
             print(m_n)
             
-            rho_n = rho_eos(p_n, K, gamma)
+            rho_n = rho_eos(p_n, K, gamma) 
             epsilon_n = sp_energy_eos(p_n, rho_n, gamma)
         
             p_k1 = dpdr(rho_n, epsilon_n, r_n, p_n, m_n)
@@ -90,9 +90,9 @@ def RK4(radii, pressure, mass, K, gamma):
     
             m_k1 = dmdr(r_n, rho_n, epsilon_n)
             m_k2 = dmdr(r_n + 0.5*dr, rho_n, epsilon_n)
-            m_k3 = dmdr(r_n + 0.5*dr, rho_n, epsilon_n)
+            #m_k3 = dmdr(r_n + 0.5*dr, rho_n, epsilon_n)
             m_k4 = dmdr(r_n + dr, rho_n, epsilon_n)
-            mass[n] = m_n + (dr/6.)*(m_k1 + 2*m_k2 + 2*m_k3 + m_k4)
+            mass[n] = m_n + (dr/6.)*(m_k1 + 4*m_k2 +m_k4)# + 2*m_k3 + m_k4)
     
     return pressure, mass
 
@@ -105,10 +105,10 @@ def RK4_baryonic(radii, massBaryon, massOfStar, pressure, K, gamma):
             p_n = pressure[n-1]
             rho_n = rho_eos(p_n, K, gamma)
         
-            mB_k1 = dmBdr(r_n, rho_n, massOfStar)
-            mB_k2 = dmBdr(r_n + 0.5*dr, rho_n, massOfStar)
-            #mB_k3 = dmBdr(r_n + 0.5*dr, rho_n, massOfStar)
-            mB_k4 = dmBdr(r_n + dr, rho_n, massOfStar)
+            mB_k1 = dmBdr(r_n, rho_n, massOfStar[n-1])
+            mB_k2 = dmBdr(r_n + 0.5*dr, rho_n, massOfStar[n-1])
+            #mB_k3 = dmBdr(r_n + 0.5*dr, rho_n, massOfStar[n])
+            mB_k4 = dmBdr(r_n + dr, rho_n, massOfStar[n-1])
         
             massBaryon[n] = mB_n + (dr/6.)*(mB_k1 + 4*mB_k2 +mB_k4)# + 2*mB_k3 + mB_k4)
     return massBaryon

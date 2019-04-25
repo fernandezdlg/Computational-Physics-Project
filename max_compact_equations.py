@@ -60,9 +60,9 @@ def compact_main():
     radius_vals = zeros(N_energy)
     
     for i, e_0 in enumerate(e_0_vals):
-        q_max = 2.026
+        #q_max = 2.026
     
-        q_vals, y_vals = zeros(N), zeros(N)
+        q_vals, y_vals = zeros(N), zeros(N) 
         q_vals[0] = q_max
     
         x_bound = 1
@@ -90,21 +90,21 @@ def compact_main():
     #plt.subplot(121)
     plt.figure()
     plt.plot(e_0_vals, maxmass_vals)
-    plt.xlabel('Surface energy density ($Jm^{-2}$)'), plt.ylabel('Mass (kg)')
-    plt.title('Mass (at r=radius) of neutron star (for maximally stiff EoS)')
+    plt.xlabel('Surface energy density [J m$^{-2}$]'), plt.ylabel('Mass [kg]')
+    plt.title('Total mass of neutron star')
     plt.tight_layout()
     plt.show()
-#    plt.savefig('StarMass_SEDensity_MS_11.png', format='png', dpi=300)
+    plt.savefig('maxMass.png', format='png', dpi=300)
     
     
     #plt.subplot(122)
     plt.figure()
     plt.plot(e_0_vals, radius_vals)
-    plt.xlabel('Surface energy density ($Jm^{-2}$)'), plt.ylabel('Radius (m)')
-    plt.title('Radius of neutron star (for maximally stiff EoS)')
+    plt.xlabel('Surface energy density [J m$^{-2}$]'), plt.ylabel('Radius [m]')
+    plt.title('Radius of neutron star')
     plt.tight_layout()
     plt.show()
-#    plt.savefig('Radius_SEDensity_MS_11.png', format='png', dpi=300)
+    plt.savefig('maxRadius.png', format='png', dpi=300)
 
 
 compact_main()

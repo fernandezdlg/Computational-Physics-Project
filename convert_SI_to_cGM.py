@@ -10,7 +10,7 @@ G = 6.67408 * 10**-11
 G_err = 0.00031 * 10**-11
 
 # solar mass constant as quoted by NIST CODATA in SI [kg]
-M0 = 1.98847 * 10**30 
+M0 = 1.98847 * 10**30  
 M0_err = 0.00007 * 10**30
 
 # mass is input in kg

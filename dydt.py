@@ -15,7 +15,7 @@ def dphidr(m,r,p):
 """
 ### TOV equations ###
 # cGM units used thoroughout
-def dpdr(rho,epsilon,r,p,m):
+def dpdr(rho,epsilon,r,p,m): 
     return -(rho*(1+epsilon)+p)*(m + 4*pi*(r**3)*p)/(r*(r-(2*m)))
    
 def dmdr(r,rho,epsilon):
@@ -36,4 +36,4 @@ def dmdr_newton(r, rho):
     return 4*pi*(r**2)*rho
 
 def dphidr_newton(r,m,p):
-    return -m/(r**2)
+    return m/(r**2)
